@@ -1,3 +1,5 @@
+# This file will compress the relevant game files and show you the size of the compressed folder
+# The purpose being to rapidly check whether or not additional files are beyond the size limit
 
 
 # helper function to format file sizes
