@@ -1,6 +1,6 @@
 
 
-# helper function t0 format file sizes
+# helper function to format file sizes
 Function Format-FileSize() {
     Param ([int]$size)
     If ($size -gt 1TB) {[string]::Format("{0:0.00} TB", $size / 1TB)}
@@ -12,7 +12,6 @@ Function Format-FileSize() {
 }
 
 # set variables with global scope
-$FileToExclude = "compressor.ps1"   # here we exclude this script from being included in the zip file
 $ZipFileResult = "test.zip"  # provide path for zip file
 $Dir = "./" # provide path for directory containing files to be zipped 
 
@@ -25,7 +24,7 @@ $cleanedFileSizes = @()
 
 foreach ($file in $filenames)
 {
-    if ($file -ne "compressor.ps1")
+    if (($file -ne "compressor.ps1") -and ($file -ne "README.md"))
     {
         #$newLetters = $newLetters + $letter
         $cleanedFileNames = $cleanedFileNames += $file
@@ -37,14 +36,17 @@ foreach ($file in $filenames)
 
 
 Get-ChildItem -Path $Dir  | 
-           Where-Object { $_.Name -notin $fileToExclude} | 
-              Compress-Archive -DestinationPath $ZipFileResult
+           Where-Object { $_.Name -notin "compressor.ps1"} |
+                 Where-Object {$_.Name -notin "README.md"} |
+                    Compress-Archive -DestinationPath $ZipFileResult
 
 
 
 if (Test-Path $ZipFileResult) {
      $thing = (Get-Item $ZipFileResult).length -gt 13kb 
      Write-Host Are you over the 13kb limit?: $thing
+     $zipSize = Format-FileSize((Get-Item $ZipFileResult).length)
+     Write-Host Size of your compressed files: $zipSize
 }
 
 Remove-Item $ZipFileResult
