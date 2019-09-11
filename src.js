@@ -164,7 +164,6 @@ function draw_block(timer_lower,timer,init_height,counter,speed,position,key,hei
                 lastPress += 1;
                 if (init_height+counter > canvas.height-130 || lastPress > (height/speed)-1){
                     score_counter +=5;
-                    console.log("hi")
                     score_delta=1;
                 }
             }
@@ -181,7 +180,6 @@ function draw_block(timer_lower,timer,init_height,counter,speed,position,key,hei
                     lastPress += 1;
                     if (init_height+counter > canvas.height-130 || lastPress > (height/speed)-1){
                         score_counter +=5;
-                        console.log("hi")
                         score_delta=1;
                     }
                 }
@@ -197,7 +195,6 @@ function draw_block(timer_lower,timer,init_height,counter,speed,position,key,hei
                     lastPress += 1;
                     if (init_height+counter > canvas.height-130 || lastPress > (height/speed)-1){
                         score_counter +=5;
-                        console.log("hi")
                         score_delta=1;
                     }
                 }
@@ -212,7 +209,6 @@ function draw_block(timer_lower,timer,init_height,counter,speed,position,key,hei
                     lastPress += 1;
                     if (init_height+counter > canvas.height-130 || lastPress > (height/speed)-1){
                         score_counter +=5;
-                        console.log("hi")
                         score_delta=1;
                     }
                 }
@@ -227,7 +223,6 @@ function draw_block(timer_lower,timer,init_height,counter,speed,position,key,hei
                     lastPress += 1;
                     if (init_height+counter > canvas.height-130 || lastPress > (height/speed)-1){
                         score_counter +=5;
-                        console.log("hi")
                         score_delta=1;
                     }
                 }
@@ -242,7 +237,6 @@ function draw_block(timer_lower,timer,init_height,counter,speed,position,key,hei
                     lastPress += 1;
                     if (init_height+counter > canvas.height-130 || lastPress > (height/speed)-1){
                         score_counter +=5;
-                        console.log("hi")
                         score_delta=1;
                     }
                 }
@@ -257,7 +251,6 @@ function draw_block(timer_lower,timer,init_height,counter,speed,position,key,hei
                     lastPress += 1;
                     if (init_height+counter > canvas.height-130 || lastPress > (height/speed)-1){
                         score_counter +=5;
-                        console.log("hi")
                         score_delta=1;
                     }
                 }
@@ -272,7 +265,7 @@ function draw_block(timer_lower,timer,init_height,counter,speed,position,key,hei
                     lastPress += 1;
                     if (init_height+counter > canvas.height-130 || lastPress > (height/speed)-1){
                         score_counter +=5;
-                        console.log("hi")
+
                         score_delta=1;
                     }
                 }
@@ -287,7 +280,7 @@ function draw_block(timer_lower,timer,init_height,counter,speed,position,key,hei
                     lastPress += 1;
                     if (init_height+counter > canvas.height-130 || lastPress > (height/speed)-1){
                         score_counter +=5;
-                        console.log("hi")
+
                         score_delta=1;
                     }
                 }
@@ -366,7 +359,7 @@ function draw_block(timer_lower,timer,init_height,counter,speed,position,key,hei
     }   
 
     
-    return [counter,lastPress,score_counter,score_delta];
+    return [counter,lastPress,Math.round(score_counter),score_delta];
 }
 
 
@@ -391,14 +384,13 @@ function dispScore(score){
  
 }
 // draw graphs on screen, show enemies, and update health
-function graph(positions,counters,score,lastPresses,timer,init_height,letters,offsets,score_delta){
+function graph(positions,counters,score,lastPresses,timer,init_height,letters,offsets,score_delta,heights){
     
 
    for (i = 0; i < counters.length; i++){
-    [counters[i],lastPresses[i],score,score_delta] = draw_block(offsets[i],timer,init_height,counters[i],2,positions[letters[i]],letters[i],25,lastPresses[i],score,score_delta);
+    [counters[i],lastPresses[i],score,score_delta] = draw_block(offsets[i],timer,init_height,counters[i],2,positions[letters[i]],letters[i],heights[i],lastPresses[i],score,score_delta);
      let damage = update_health(score,100,score_delta);
     dispScore(damage/10);
-    console.log(damage/10);
 }
    ctx.fillStyle = "red";
 
@@ -437,10 +429,13 @@ function getRandom(min, max, buffer, maxcount) {
 
 // function that generates graph data
 function generateGraph(difficulty,timer){
+
     if (difficulty == 'easy'){
-        graphLength = Math.floor(Math.random() * 10) + 5;
+        let heightProbs = [25,25,25,25,25,25,75];
+        graphLength = randomBetween(10,15).val
         offsetSpacing = 500; // variable to define how spaced out the offsets should be
         offsets = getRandom(timer,timer+5000,offsetSpacing,graphLength)
+        heights = []
         counter_array = [];
        keys = [];
          speed = [];
@@ -448,7 +443,7 @@ function generateGraph(difficulty,timer){
         for (i = 0; i < graphLength; i++){
             counter_array[i] =0;
             lastPresses[i] = 0;
- 
+            heights[i] = heightProbs[randomBetween(0,heightProbs.length-1).val];
             letterIndex = randomBetween(0,letters.length);
             keys[i] = letters[letterIndex.val];
             speed_val = randomBetween(1,2);
@@ -457,9 +452,11 @@ function generateGraph(difficulty,timer){
         
     }
     if (difficulty == 'medium'){
-         graphLength = Math.floor(Math.random() * 10) + 5;
+        let heightProbs = [25,25,25,25,25,75,75];
+         graphLength = randomBetween(15,20).val
         offsetSpacing = 350; // variable to define how spaced out the offsets should be
         offsets = getRandom(timer,timer+20000,offsetSpacing,graphLength)
+        heights = [];
         counter_array = [];
        keys = [];
          speed = [];
@@ -467,7 +464,7 @@ function generateGraph(difficulty,timer){
         for (i = 0; i < graphLength; i++){
             counter_array[i] =0;
             lastPresses[i] = 0;
- 
+            heights[i] = heightProbs[randomBetween(0,heightProbs.length-1).val];
             letterIndex = randomBetween(0,letters.length);
             keys[i] = letters[letterIndex.val];
             speed_val = randomBetween(1,2);
@@ -476,9 +473,11 @@ function generateGraph(difficulty,timer){
 
     }
     if (difficulty == 'hard'){
-        graphLength = Math.floor(Math.random() * 10) + 5;
+        let heightProbs = [25,25,25,25,75,75,75];
+        graphLength = randomBetween(15,20).val
        offsetSpacing = 100; // variable to define how spaced out the offsets should be
-       offsets = getRandom(timer,timer+20000,offsetSpacing,graphLength)
+       offsets = getRandom(timer,timer+20000,offsetSpacing,graphLength);
+       heights = [];
        counter_array = [];
       keys = [];
         speed = [];
@@ -486,7 +485,7 @@ function generateGraph(difficulty,timer){
        for (i = 0; i < graphLength; i++){
            counter_array[i] =0;
            lastPresses[i] = 0;
-
+           heights[i] = heightProbs[randomBetween(0,heightProbs.length-1).val];
            letterIndex = randomBetween(0,letters.length);
            keys[i] = letters[letterIndex.val];
            speed_val = randomBetween(1,3);
@@ -501,31 +500,71 @@ function generateGraph(difficulty,timer){
         counters:counter_array,
         keys: keys,
         speed: speed,
-        lastPresses: lastPresses
+        lastPresses: lastPresses,
+        heights: heights
     }
     return graph_data;
 }
 
+
+
+var deductor = true;
+var deltaSpritex = 5;
+var deltaSpritey = 3;
 // function that allows user to select difficulty, play through graph, and applies damage to enemy
-function level(combat_status,timer,init_height,positions,graph_data,difficulty,damage){
-    ctx.drawImage(drScoliosisSprite,positions['l']-75,75,158,145);
+function level(combat_status,timer,init_height,positions,graph_data,difficulty,damage,villainHealth,userHealth){
+   
+    ctx.drawImage(drScoliosisSprite,positions['g'],75,158,147);
     drScoliosisSprite.src="./drscoliosis.png";
-    textOptions = ["Press A for Easy Attack","Press S for Medium Attack","Press D for hard Attack"]
+    textOptions = ["Press A for Easy Attack","Press S for Medium Attack","Press D for Hard Attack"]
+    tauntOptions = ["Is that all you got?","My great grandma is better at rhythm games than you!","I can't believe I went to med school for this.","If you want to make an appointment, talk to my assistant."]
+    DoubleDamage = false;
+    SlowMotion = false;
+    HealthPack = false;
+    powerUp = false;
+    
+    
     // if player is not in combat, allow them to select difficulty
     if (combat_status == false){
         ctx.font = "15px Arial";
         ctx.fillStyle = "red";
+        ctx.fillText("Defeat Dr. Scoliosis, M.D. before you become his next victim and he gives you scoliosis",positions['a']-100,260)
+        ctx.fillText("Select an attack on the right by clicking A, S, or D. Complete the rhythm pattern to inflict damage on Dr. Scoliosis.",positions['a']-100,280)
+        ctx.fillText("Complete the pattern with the middle row of letters on the keyboard.",positions['a']-100,300) 
+        ctx.fillText("The harder the pattern the more damage you inflict",positions['a']-100,320)
+        ctx.fillText("Enable power-ups by clicking the p key. Power ups will appear randomly in the bottom right-hand corner",positions['a']-100,340)
         ctx.fillText(textOptions[0], canvas.width-200, canvas.height-300);
         ctx.fillText(textOptions[1],canvas.width-200,canvas.height-200);
         ctx.fillText(textOptions[2],canvas.width-200,canvas.height-100);
-       
+        
+        if (deductor == true){
+            // deduct health from dr scoliosis
+            if (difficulty == 'easy'){
+            villainHealth -= Math.floor(score*0.5);
+            }
+            if (difficulty == 'medium'){
+                villainHealth -= Math.floor(score*1.5);
+            }
+            if (difficulty == 'hard'){
+                villainHealth -= Math.floor(score*2);
+            }
+            
+            // determine how much damage is to be inflicted on the user
+            if (score != 0){
+            userHealth -= randomBetween(10,100).val;
+            console.log(userHealth)
+        }
+            deductor = false;
+        }
+        
 
+        
         if (aPress){
             difficulty = "easy";
             ctx.font = "17px Arial";
             combat_status = true;
             graph_data = generateGraph('easy',timer);
-            console.log(score)
+            taunt = tauntOptions[randomBetween(0,tauntOptions.length-1).val];
             score = 0;
             
         }
@@ -535,7 +574,7 @@ function level(combat_status,timer,init_height,positions,graph_data,difficulty,d
             ctx.font = "17px Arial";
             combat_status = true;
             graph_data = generateGraph('medium',timer);
-            console.log(score)
+            taunt = tauntOptions[randomBetween(0,tauntOptions.length-1).val];
             score = 0;
         }
       
@@ -545,13 +584,23 @@ function level(combat_status,timer,init_height,positions,graph_data,difficulty,d
             ctx.font = "17px Arial";
             combat_status = true;
             graph_data = generateGraph('hard',timer);
-            console.log(score)
+            taunt = tauntOptions[randomBetween(0,tauntOptions.length-1).val];
             score = 0;
         }
+        
       
     }
 
     if (combat_status == true){
+         // display text  boxes for dr. scoliosis taunts
+         drScoliosisSprite.src="./drscoliosis.png";
+        ctx.font = "13px Arial"
+        ctx.fillStyle = "red"
+        ctx.rect(20, 20, 400, 100);
+        ctx.stroke();
+        ctx.fillText(taunt,25,35);
+               
+       
         if (difficulty == 'easy'){
             ctx.fillStyle = "red";
             ctx.font = "15px Arial";
@@ -560,7 +609,7 @@ function level(combat_status,timer,init_height,positions,graph_data,difficulty,d
             ctx.font = "13px Arial";
             ctx.fillText(textOptions[1],canvas.width-200,canvas.height-200);
             ctx.fillText(textOptions[2],canvas.width-200,canvas.height-100);
-            score=graph(positions,graph_data.counters,score,graph_data.lastPresses,timer,init_height,graph_data.keys,graph_data.offsets,score_delta);
+            score=graph(positions,graph_data.counters,score,graph_data.lastPresses,timer,init_height,graph_data.keys,graph_data.offsets,score_delta,graph_data.heights);
             if (timer > Math.max(...graph_data.offsets)+2000){
                 combat_status = false;
             }
@@ -573,7 +622,7 @@ function level(combat_status,timer,init_height,positions,graph_data,difficulty,d
             ctx.fillText(textOptions[0], canvas.width-200, canvas.height-300);
             ctx.font = "13px Arial";
             ctx.fillText(textOptions[2],canvas.width-200,canvas.height-100);
-            score=graph(positions,graph_data.counters,score,graph_data.lastPresses,timer,init_height,graph_data.keys,graph_data.offsets,score_delta);
+            score=graph(positions,graph_data.counters,score,graph_data.lastPresses,timer,init_height,graph_data.keys,graph_data.offsets,score_delta,graph_data.heights);
             if (timer > Math.max(...graph_data.offsets)+2000){
                 combat_status = false;
             }
@@ -586,19 +635,22 @@ function level(combat_status,timer,init_height,positions,graph_data,difficulty,d
             ctx.fillStyle = "rgba(255, 0, 0, 0.3)";
             ctx.fillText(textOptions[0], canvas.width-200, canvas.height-300);
             ctx.fillText(textOptions[1],canvas.width-200,canvas.height-200);
-            score=graph(positions,graph_data.counters,score,graph_data.lastPresses,timer,init_height,graph_data.keys,graph_data.offsets,score_delta);
+            score=graph(positions,graph_data.counters,score,graph_data.lastPresses,timer,init_height,graph_data.keys,graph_data.offsets,score_delta,graph_data.heights);
             
             if (timer > Math.max(...graph_data.offsets)+2000){
                 combat_status = false;
             }
         }
+        deductor = true;
     }
 
     
-    return [combat_status,difficulty,graph_data,damage]
+    return [combat_status,difficulty,graph_data,damage,villainHealth,userHealth]
 
 }
 
+var villainHealth = 1000
+var userHealth = 500
 
 var combat = false;
 var score_delta=0;
@@ -635,7 +687,8 @@ function draw(){
     
     draw_menu(position_keys);
     // score=graph(position_keys,counters,score,lp,timer,init_height,keys,offsets,score_delta);
-    [combat,difficulty,graph_data,damage] = level(combat,timer,init_height,position_keys,graph_data,difficulty,damage)
+    [combat,difficulty,graph_data,damage,villainHealth,userHealth] = level(combat,timer,init_height,position_keys,graph_data,difficulty,damage,villainHealth,userHealth);
+    console.log(userHealth)
 }
 
 var draw = setInterval(draw,10);
