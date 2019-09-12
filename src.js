@@ -221,61 +221,66 @@ function draw_block(timer_lower,timer,init_height,counter,speed,position,key,hei
     }
     else{
         collision = false
-
+            if (key == 'a'){
             if (aPress == true){
                 neg_score_counter -= 1;
                 score_delta=-1;
             }
-        
+            }
             
         
-    
+            if (key == 's'){
             if (sPress == true){
                 neg_score_counter -= 1;
                 score_delta=-1;
             }
+            }
         
-        
-     
+            if (key == 'd'){
             if (dPress == true){
                 neg_score_counter -= 1;
                 score_delta=-1;
             }
-        
-     
+        }
+
+            if (key == 'f'){
             if (fPress == true){
                 neg_score_counter -= 1;
                 score_delta=-1;
             }
-        
-       
+            }
+            if (key == 'g'){
             if (gPress == true){
                 neg_score_counter -= 1;
                 score_delta=-1;
             }
-        
-       
+            }
+            if (key == 'h'){
             if (hPress == true){
                 neg_score_counter -= 1;
                 score_delta=-1;
             }
-        
-        
+            }
+            
+            if (key == 'j'){
             if (jPress == true){
                 neg_score_counter -= 1;
                 score_delta=-1;
             }
-        
-        
+            }
+            
+            if (key == 'k'){
             if (kPress == true){
                 neg_score_counter -= 1;
                 score_delta=-1;
             }
-        
+        }
+            if (key == 'l'){
             if (lPress == true){
                 neg_score_counter -= 1;
                 score_delta=-1;
             }
+        }
         
     }
 
@@ -311,28 +316,24 @@ function draw_menu(position){
 var drScoliosisSprite=new Image();
 
 // function that shows score and streaks
-function dispScore(score){
+function dispScore(score,posx,posy,color, label){
     ctx.font = "30px Arial";
-    ctx.fillStyle = "red";
-    ctx.fillText("Score: ", canvas.width-200, 100);
-    ctx.fillText(score.toString(),canvas.width-200,200)
- 
+    ctx.fillStyle = color;
+    ctx.fillText(label, posx, posy);
+    ctx.fillText(score.toString(),posx,posy+30)
 }
 // draw graphs on screen, show enemies, and update health
-function graph(positions,counters,score,lastPresses,timer,init_height,letters,offsets,score_delta,heights,neg_score){
+function graph(positions,counters,score,lastPresses,timer,init_height,letters,offsets,score_delta,heights,neg_score,speeds){
     
 
    for (i = 0; i < counters.length; i++){
-    [counters[i],lastPresses[i],score,score_delta,neg_score] = draw_block(offsets[i],timer,init_height,counters[i],2,positions[letters[i]],letters[i],heights[i],lastPresses[i],score,score_delta,neg_score);
+    [counters[i],lastPresses[i],score,score_delta,neg_score] = draw_block(offsets[i],timer,init_height,counters[i],speeds[i],positions[letters[i]],letters[i],heights[i],lastPresses[i],score,score_delta,neg_score);
      let damage = update_health(score);
-    dispScore(Math.round(damage/10));
-    console.log(neg_score)
+    dispScore(Math.round(damage/10)-1,canvas.width-200,60,"green", "Score: ");
+    dispScore(Math.floor(neg_score/100),canvas.width-200,120,'red',"Penalty: ")
+    
 }
-   ctx.fillStyle = "red";
-
-   
-    // show attack options on screen
-    return score;
+    return [Math.round(damage/10)-1,neg_score];
 }
 
 // function to update health of user and enemy based on score metric collected from graph
@@ -370,7 +371,7 @@ function generateGraph(difficulty,timer){
         let heightProbs = [25,25,25,25,25,25,75];
         graphLength = randomBetween(10,15).val
         offsetSpacing = 500; // variable to define how spaced out the offsets should be
-        offsets = getRandom(timer,timer+5000,offsetSpacing,graphLength)
+        offsets = getRandom(timer,timer+3000,offsetSpacing,graphLength)
         heights = []
         counter_array = [];
        keys = [];
@@ -391,7 +392,7 @@ function generateGraph(difficulty,timer){
         let heightProbs = [25,25,25,25,25,75,75];
          graphLength = randomBetween(15,20).val
         offsetSpacing = 350; // variable to define how spaced out the offsets should be
-        offsets = getRandom(timer,timer+20000,offsetSpacing,graphLength)
+        offsets = getRandom(timer,timer+4000,offsetSpacing,graphLength)
         heights = [];
         counter_array = [];
        keys = [];
@@ -412,7 +413,8 @@ function generateGraph(difficulty,timer){
         let heightProbs = [25,25,25,25,75,75,75];
         graphLength = randomBetween(15,20).val
        offsetSpacing = 100; // variable to define how spaced out the offsets should be
-       offsets = getRandom(timer,timer+20000,offsetSpacing,graphLength);
+       
+       offsets = getRandom(timer,timer+5000,offsetSpacing,graphLength);
        heights = [];
        counter_array = [];
       keys = [];
@@ -461,9 +463,14 @@ var UserHealthBar = {
     length: userHealthBarLength,
     height:20
 }
+var damage = 0;
+var userDamage = 0;
+var gameOver = false;
+
+
 // function that allows user to select difficulty, play through graph, and applies damage to enemy
 function level(combat_status,timer,init_height,positions,graph_data,difficulty,damage,villainHealth,userHealth){
-   fullVillainHealth = 1000;
+   fullVillainHealth = 800;
    fullHeroHealth = 500;
     ctx.drawImage(drScoliosisSprite,positions['g'],75,158,147);
     drScoliosisSprite.src="./drscoliosis.png";
@@ -487,34 +494,45 @@ function level(combat_status,timer,init_height,positions,graph_data,difficulty,d
         ctx.fillText("Select an attack on the right by clicking A, S, or D. Complete the rhythm pattern to inflict damage on Dr. Scoliosis.",positions['a']-100,280)
         ctx.fillText("Complete the pattern with the middle row of letters on the keyboard.",positions['a']-100,300) 
         ctx.fillText("The harder the pattern the more damage you inflict. The little green bar is your health. Make sure it doesn't disappear",positions['a']-100,320)
-        ctx.fillText("Enable power-ups by clicking the p key. Power ups will appear randomly in the bottom right-hand corner",positions['a']-100,340)
+        ctx.fillText("Remember, you can attack Dr. Scoliosis, M.D., but he can also attack you",0,360);
         ctx.fillText(textOptions[0], canvas.width-200, canvas.height-300);
         ctx.fillText(textOptions[1],canvas.width-200,canvas.height-200);
         ctx.fillText(textOptions[2],canvas.width-200,canvas.height-100);
+        ctx.fillText("You inflicted " +damage.toString() + " damage",positions['l']+75,(canvas.height/4)-75)
+        ctx.fillText("You received " + userDamage.toString() + " damage",positions['l']+75,(canvas.height/4)-55)
         if (deductor == true){
             // deduct health from dr scoliosis
             if (difficulty == 'easy'){
+                damage = Math.floor(score*0.5)-Math.floor(neg_score/100);
             villainHealth -= Math.floor(score*0.5);
+           
             }
             if (difficulty == 'medium'){
+                damage = Math.floor(score*1.5)-Math.floor(neg_score/100);
                 villainHealth -= Math.floor(score*1.5);
+                // ctx.fillText("You inflicted" +score*1.5 + "")
             }
             if (difficulty == 'hard'){
+                damage = Math.floor(score*2)-Math.floor(neg_score/100)
                 villainHealth -= Math.floor(score*2);
+                // ctx.fillText("You inflicted" +score*1.5 + "")
             }
             damageRatio = score/fullVillainHealth;
-            VillainHealthBar.length = VillainHealthBar.length-(VillainHealthBar.length*damageRatio)
+            VillainHealthBar.length = VillainHealthBar.length-(villainHealthBarLength*damageRatio)
             // determine how much damage is to be inflicted on the user
             if (score != 0){
-            damageVal = randomBetween(10,100).val
-            damageRatio = damageVal/userHealth
+            userDamage = randomBetween(10,20).val
+            damageRatio = userDamage/userHealth
             UserHealthBar.length -= UserHealthBar.length*damageRatio;
             // userHealth -= randomBetween(10,100).val;
             
             // console.log(userHealth)
+           
+           
         }
             deductor = false;
         }
+       
         
         damageRatio = score/fullVillainHealth;
         
@@ -550,19 +568,26 @@ function level(combat_status,timer,init_height,positions,graph_data,difficulty,d
             score = 0;
             neg_score = 0;
         }
-        
+        if (userHealthBarLength <= 0){
+            ctx.fillText("Game Over, refresh to play again",100,100)
+            combat_status = false;
+        }
+        if (VillainHealthBar <= 0){
+            ctx.fillText("Congratulations, you beat the evil Dr. Scoliosis, M.D. Refresh to play again",100,100)
+            combat_status = false;
+        }
       
     }
 
     if (combat_status == true){
          // display text  boxes for dr. scoliosis taunts
-         drScoliosisSprite.src="./drscoliosis.png";
+        //  drScoliosisSprite.src="./drscoliosis.png";
         ctx.font = "13px Arial"
         ctx.fillStyle = "red"
         ctx.rect(20, 20, 400, 100);
         ctx.stroke();
         ctx.fillText(taunt,25,35);
-               
+        
        
         if (difficulty == 'easy'){
             ctx.fillStyle = "red";
@@ -572,10 +597,7 @@ function level(combat_status,timer,init_height,positions,graph_data,difficulty,d
             ctx.font = "13px Arial";
             ctx.fillText(textOptions[1],canvas.width-200,canvas.height-200);
             ctx.fillText(textOptions[2],canvas.width-200,canvas.height-100);
-            score=graph(positions,graph_data.counters,score,graph_data.lastPresses,timer,init_height,graph_data.keys,graph_data.offsets,score_delta,graph_data.heights, neg_score);
-            if (timer > Math.max(...graph_data.offsets)+2000){
-                combat_status = false;
-            }
+            [score,neg_score]=graph(positions,graph_data.counters,score,graph_data.lastPresses,timer,init_height,graph_data.keys,graph_data.offsets,score_delta,graph_data.heights, neg_score, graph_data.speed);
         }
         if (difficulty == 'medium'){
             ctx.fillStyle = "red";
@@ -585,10 +607,7 @@ function level(combat_status,timer,init_height,positions,graph_data,difficulty,d
             ctx.fillText(textOptions[0], canvas.width-200, canvas.height-300);
             ctx.font = "13px Arial";
             ctx.fillText(textOptions[2],canvas.width-200,canvas.height-100);
-            score=graph(positions,graph_data.counters,score,graph_data.lastPresses,timer,init_height,graph_data.keys,graph_data.offsets,score_delta,graph_data.heights, neg_score);
-            if (timer > Math.max(...graph_data.offsets)+2000){
-                combat_status = false;
-            }
+            [score,neg_score]=graph(positions,graph_data.counters,score,graph_data.lastPresses,timer,init_height,graph_data.keys,graph_data.offsets,score_delta,graph_data.heights, neg_score, graph_data.speed);
         }
         if (difficulty == 'hard'){
             ctx.fillStyle = "red";
@@ -598,12 +617,26 @@ function level(combat_status,timer,init_height,positions,graph_data,difficulty,d
             ctx.fillStyle = "rgba(255, 0, 0, 0.3)";
             ctx.fillText(textOptions[0], canvas.width-200, canvas.height-300);
             ctx.fillText(textOptions[1],canvas.width-200,canvas.height-200);
-            score=graph(positions,graph_data.counters,score,graph_data.lastPresses,timer,init_height,graph_data.keys,graph_data.offsets,score_delta,graph_data.heights, neg_score);
-            
-            if (timer > Math.max(...graph_data.offsets)+2000){
+            [score,neg_score]=graph(positions,graph_data.counters,score,graph_data.lastPresses,timer,init_height,graph_data.keys,graph_data.offsets,score_delta,graph_data.heights, neg_score, graph_data.speed);
+            // if (timer > Math.max(...graph_data.offsets)+2000){
+            //     combat_status = false;
+            // }
+        }
+        let lastBlock = Math.max(...graph_data.offsets);
+        let lastBlockSpeed = graph_data.speed.indexOf(lastBlock);
+        if (lastBlockSpeed == 1){
+            if (timer > lastBlock+10000){
                 combat_status = false;
+                console.log("hi")
             }
         }
+        else{
+            if (timer > lastBlock+6000){
+                combat_status = false;
+                console.log("bye")
+            }
+        }
+        damage = 0;
         deductor = true;
     }
 
@@ -614,7 +647,7 @@ function level(combat_status,timer,init_height,positions,graph_data,difficulty,d
 
 var villainHealth = 1000
 var userHealth = 500
-var negScore = 0;
+var penalty = 0;
 var combat = false;
 var score_delta=0;
 var activation = false;
